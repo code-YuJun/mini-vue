@@ -1,0 +1,19 @@
+{
+  "name": "reactivity",
+  "version": "1.0.0",
+  "module": "dist/reactivity.esm-builder.js",
+  "unpkg": "dist/reactivity.global.js",
+  "main": "src/index.ts",
+  "buildOptions": {
+    "name": "VueReactivity",
+    "formats": [
+      "esm-bundler",
+      "esm-browser",
+      "cjs",
+      "global"
+    ]
+  },
+  "dependencies": {
+    "shared": "workspace:^"
+  }
+}
