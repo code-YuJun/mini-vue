@@ -1,2 +1,2 @@
-import {isObject} from 'shared'
-console.log(isObject)
+export * from "./effect"
+export * from "./reactivity"
