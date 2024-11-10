@@ -33,3 +33,55 @@ const mutableHandlers:ProxyHandler<any> = {
     }
 }
 ```
+
+## reflect
+解决问题
+```ts
+const person = {
+    name: 'lisi',
+    get peopleName() {
+        return this.name
+    }
+}
+// 代理这个对象
+let personProxy = new Proxy(person, {
+    get(target, key) {
+        console.log('get方法调用了')
+        return target[key]
+    },
+    set(target, key, value) {
+        target[key] = value
+    }
+})
+// 访问 peopleName 属性
+console.log(personProxy.peopleName)
+/**
+ * 现象：此时发现 get 方法只被调用了一次（peopleName），在 peopleName 方法中还访问了 person.name 属性，但没有调用 get 方法。
+ * 原理：访问 personProxy.peopleName ，执行 get 方法，打印“get方法调用了”，然后访问  target[key] ，其实就是 person.peopleName
+ * 其实就在访问 person.name，但是访问 person.name 是不会触发 get 方法， personProxy.name 才会触发 get。就不能直接 return target[key]
+ * 方案1:
+ *    get(target, key,receiver) {
+        console.log('get方法调用了')
+        return receiver[key]
+      }
+   这种方法直接死循环了，每次访问代理对象的属性，都会再次执行 get 方法
+    
+   方案2:
+    get(target, key,receiver) {
+        console.log('get方法调用了')
+        return Reflect.get(target,key,receiver)
+    }
+    Reflect.get(target,key,receiver) 等价于 receiver[key]
+    此时 this.name 就不是 person 而是代理对象。就会触发 get 方法。
+    export const mutableHandlers:ProxyHandler<any> = {
+        // 被代理过的对象，获取属性时，才会执行get方法
+        get(target,key,recevier){
+        if(key === ReactiveFlags.IS_REACTIVE) return true
+            return Reflect.get(target,key,recevier)
+        },
+        set(target,key,value,recevier){
+            return Reflect.set(target,key,value,recevier)
+        }
+    }
+ */
+```
