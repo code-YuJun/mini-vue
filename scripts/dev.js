@@ -11,9 +11,7 @@ const target = args._[0] || 'reactivity' // 打包哪个项目
 const format = args.f || 'iife' // 打包后的模块化规范
 
 const dirname = path.resolve(__dirname)
-const pkg = path.resolve(dirname,`../packages/${target}/package.json`)
-console.log(dirname)
-
+const pkg = require(path.resolve(dirname,`../packages/${target}/package.json`))
 // 打包入口
 const entry = path.resolve(dirname,`../packages/${target}`)
 // 开发环境直接用 esbuild 打包了
@@ -24,7 +22,7 @@ esbuild.context({
     platform:"browser",
     sourcemap:true, // 可以调试源代码
     format, // cjs esm iife
-    globalName:pkg.buildOptions?.name
+    globalName:pkg.buildOptions?.name // iife 必须要一个变量,用了 package.json 中的 buildOptions.name
 }).then((ctx) => {
     console.log('start dev')
     return ctx.watch() // 监控文件实时打包

@@ -1,3 +1,24 @@
+## reactive effect
+```html
+<div id="app"></div>
+<script type="module">
+    import {reactive,effect} from './reactivity.esm-browser.js'
+    console.log(reactive)
+    let people = reactive({
+        name:'lisi',
+        age:18
+    })
+    console.log(people)
+    // 初始执行一次，数据变化之后再执行一次
+    effect(() => {
+        console.log('effect 执行')
+        app.innerHTML = `姓名${people.name}年龄${people.age}`
+    })
+    setTimeout(() => {
+        people.age++
+    },2000)
+</script>
+```
 ## reactive 原理
 对象被 new Proxy 的方式代理，代理之后的对象有 get、set 方法
 注意两个点：
